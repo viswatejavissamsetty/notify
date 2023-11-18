@@ -1,12 +1,10 @@
 import * as Clipboard from "expo-clipboard";
+import Constants from "expo-constants";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { useEffect, useRef, useState } from "react";
-import { Alert, Button, Platform, Text, View } from "react-native";
-import Constants from "expo-constants";
-const experienceId = Constants.expoConfig.originalFullName;
-
-console.log(experienceId);
+import { Button, Platform, Text, View } from "react-native";
+const experienceId = Constants.manifest2.id;
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -30,7 +28,6 @@ export default function App() {
       .then((token) => setExpoPushToken(token))
       .catch((err) => {
         console.log(err);
-        Alert.alert(JSON.stringify(err));
         setErrorMessage(JSON.stringify(err));
       });
 
@@ -72,6 +69,7 @@ export default function App() {
           Data:{" "}
           {notification && JSON.stringify(notification.request.content.data)}
         </Text>
+        <Text>ExperienceId: {experienceId}</Text>
       </View>
       <Button
         title="Press to schedule a notification"
@@ -103,40 +101,33 @@ async function registerForPushNotificationsAsync() {
   let token;
 
   if (Platform.OS === "android") {
-    Alert.alert("1");
     await Notifications.setNotificationChannelAsync("default", {
       name: "default",
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: "#FF231F7C",
     });
-    Alert.alert("2");
   }
 
   if (Device.isDevice) {
-    Alert.alert("3");
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
-    Alert.alert("4");
     let finalStatus = existingStatus;
     if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
+      const { status } = await Notifications.requestPermissionsAsync({
+        android: { experienceId: experienceId },
+      });
       finalStatus = status;
     }
-    Alert.alert("5");
     if (finalStatus !== "granted") {
       alert("Failed to get push token for push notification!");
       return;
     }
     token = (await Notifications.getExpoPushTokenAsync({})).data;
-    Alert.alert("6");
     console.log(token);
-    Alert.alert("7");
   } else {
     alert("Must use physical device for Push Notifications");
   }
-
-  Alert.alert("8");
 
   return token;
 }
