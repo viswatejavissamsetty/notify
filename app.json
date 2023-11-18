@@ -19,6 +19,8 @@
     },
     "android": {
       "package": "com.viswateja.notify",
+      "versionCode": 1,
+      "useNextNotificationsApi": true,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
