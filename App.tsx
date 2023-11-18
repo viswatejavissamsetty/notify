@@ -4,7 +4,11 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { useEffect, useRef, useState } from "react";
 import { Button, Platform, Text, View } from "react-native";
-const experienceId = Constants.manifest2.id;
+
+const experienceId =
+  Constants.manifest2?.id ||
+  Constants.easConfig?.projectId ||
+  Constants.expoConfig?.name;
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
