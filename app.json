@@ -18,6 +18,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.viswateja.notify",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -25,6 +27,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "18c5dd1a-5326-475f-a7fa-aea1a660b891"
+      }
     }
   }
 }

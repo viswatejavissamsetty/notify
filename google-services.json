@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "431769792741",
+    "project_id": "my-lhe",
+    "storage_bucket": "my-lhe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:431769792741:android:f437c3ac40b5f275ede40c",
+        "android_client_info": {
+          "package_name": "com.viswateja.notify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlwz-QWZ8cCQKBimbw8MyYDiIIJHwM4G4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
