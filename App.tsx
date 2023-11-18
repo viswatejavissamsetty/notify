@@ -7,7 +7,13 @@ import { Button, Platform, Text, View } from "react-native";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 async function getUniqueDeviceId() {
-  let deviceId = await SecureStore.getItemAsync("device_id");
+  let deviceId: string = "";
+
+  try {
+    deviceId = await SecureStore.getItemAsync("device_id");
+  } catch (error) {
+    deviceId = "";
+  }
 
   if (!deviceId) {
     deviceId = uuidv4().toString();
