@@ -1,14 +1,21 @@
 import * as Clipboard from "expo-clipboard";
-import Constants from "expo-constants";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import * as SecureStore from "expo-secure-store";
 import { useEffect, useRef, useState } from "react";
 import { Button, Platform, Text, View } from "react-native";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
+async function getUniqueDeviceId() {
+  let deviceId = await SecureStore.getItemAsync("device_id");
 
-const experienceId =
-  Constants.manifest2?.id ||
-  Constants.easConfig?.projectId ||
-  Constants.expoConfig?.name;
+  if (!deviceId) {
+    deviceId = uuidv4().toString();
+    await SecureStore.setItemAsync("device_id", deviceId);
+  }
+
+  return deviceId;
+}
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -26,14 +33,20 @@ export default function App() {
   const notificationListener = useRef<Clipboard.Subscription>();
   const responseListener = useRef<Clipboard.Subscription>();
   const [errorMessage, setErrorMessage] = useState("");
+  const [experienceId, setExperienceId] = useState("");
 
   useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then((token) => setExpoPushToken(token))
-      .catch((err) => {
-        console.log(err);
-        setErrorMessage(JSON.stringify(err));
-      });
+    getUniqueDeviceId()
+      .then((deviceId) => {
+        setExperienceId(deviceId);
+        registerForPushNotificationsAsync(deviceId)
+          .then((token) => setExpoPushToken(token))
+          .catch((err) => {
+            console.log(err);
+            setErrorMessage(JSON.stringify(err));
+          });
+      })
+      .catch((err) => console.log(err));
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
@@ -101,7 +114,7 @@ async function schedulePushNotification() {
   });
 }
 
-async function registerForPushNotificationsAsync() {
+async function registerForPushNotificationsAsync(experienceId: string) {
   let token;
 
   if (Platform.OS === "android") {
