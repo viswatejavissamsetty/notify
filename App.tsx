@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button, Platform, Text, View } from "react-native";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
+import Constants from "expo-constants";
 async function getUniqueDeviceId() {
   let deviceId: string = "";
 
@@ -100,11 +101,13 @@ export default function App() {
           await schedulePushNotification();
         }}
       />
-      {!!errorMessage && <Text>{errorMessage}</Text>}
-      <Button
-        title="Copy Token to clipboard"
-        onPress={() => copyToClipboard(expoPushToken)}
-      />
+      {Boolean(errorMessage) && <Text>{errorMessage}</Text>}
+      {Boolean(expoPushToken) && (
+        <Button
+          title="Copy Token to clipboard"
+          onPress={() => copyToClipboard(expoPushToken)}
+        />
+      )}
     </View>
   );
 }
@@ -121,7 +124,7 @@ async function schedulePushNotification() {
 }
 
 async function registerForPushNotificationsAsync(experienceId: string) {
-  let token;
+  let token: string = "";
 
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
@@ -139,14 +142,22 @@ async function registerForPushNotificationsAsync(experienceId: string) {
     if (existingStatus !== "granted") {
       const { status } = await Notifications.requestPermissionsAsync({
         android: { experienceId: experienceId },
+        ios: {},
       });
       finalStatus = status;
     }
+
     if (finalStatus !== "granted") {
       alert("Failed to get push token for push notification!");
       return;
     }
-    token = (await Notifications.getExpoPushTokenAsync({})).data;
+
+    token = (
+      await Notifications.getExpoPushTokenAsync({
+        projectId: Constants.expoConfig.extra?.eas?.projectId,
+      })
+    ).data;
+
     console.log(token);
   } else {
     alert("Must use physical device for Push Notifications");
